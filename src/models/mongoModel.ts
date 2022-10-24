@@ -24,7 +24,10 @@ export default abstract class MongoModel<T> implements IModel<T> {
     return this._model.findById(id);
   }
 
-  public async update(id: string, item: T): Promise<T | null> {
+  public async update(id: string, item: Partial <T>): Promise<T | null> {
+    if (!isValidObjectId(id)) {
+      throw Error(ErrorTypes.InvalidMongoId);
+    }
     return this._model.findByIdAndUpdate(id, { ...item as UpdateQuery<T> }, { new: true });
   }
 
