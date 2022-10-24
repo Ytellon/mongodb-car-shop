@@ -13,6 +13,10 @@ describe('testando Model carModel', () => {
     sinon
       .stub(Model, 'create')
       .resolves(carIdMocks);
+
+    sinon
+      .stub(Model, 'find')
+      .resolves([carIdMocks]);
   });
 
   after(()=>{
@@ -26,4 +30,10 @@ describe('testando Model carModel', () => {
     });
   });
 
+  describe('testando o método read', () => {
+    it('deve ser retornado um array de carros', async () => {
+      const result = await carModel.read();
+      expect(result).to.be.eql([carIdMocks]);
+    });
+  });
 });
