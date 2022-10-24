@@ -10,6 +10,6 @@ export default class CarController {
     res: Response<ICar>,
   ) {
     const car = await this._carService.create(req.body);
-    res.status(201).send(car);
+    res.status(201).json(car);
   }
 }
