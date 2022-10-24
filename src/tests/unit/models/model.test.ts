@@ -26,6 +26,10 @@ describe('testando Model carModel', () => {
     sinon
       .stub(Model, 'findByIdAndUpdate')
       .resolves(carIdMocks);
+
+    sinon
+      .stub(Model, 'findByIdAndDelete')
+      .resolves(carIdMocks);
   });
 
   after(()=>{
@@ -64,7 +68,7 @@ describe('testando Model carModel', () => {
     });
   });
   describe('testando o método update', () => {
-    it('deve ser retornado um carro', async () => {
+    it('deve ser atualizado um carro', async () => {
       const result = await carModel.update(carIdMocks._id, carMocks);
       expect(result).to.be.eql(carIdMocks);
     });
@@ -72,6 +76,23 @@ describe('testando Model carModel', () => {
       let error: any;
       try {
         await carModel.update('2', carMocks);
+      }
+      catch (err) {
+        error = err;
+      }
+      expect(error).to.be.instanceOf(Error);
+      expect(error.message).to.be.eql(ErrorTypes.InvalidMongoId);
+    });
+  });
+  describe('testando o método delete', () => {
+    it('deve ser deletado um carro', async () => {
+      const result = await carModel.delete(carIdMocks._id);
+      expect(result).to.be.eql(carIdMocks);
+    });
+    it('deve ser lançado um erro', async () => {
+      let error: any;
+      try {
+        await carModel.delete('2');
       }
       catch (err) {
         error = err;

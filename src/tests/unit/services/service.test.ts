@@ -37,6 +37,13 @@ describe('testando service carService', () => {
       .resolves(null)
       .onCall(2)
       .resolves(carIdMocks);
+
+    sinon
+      .stub(carModel, 'delete')
+      .onCall(0)
+      .resolves(carIdMocks)
+      .onCall(1)
+      .resolves(null);
   });
 
   after(()=>{
@@ -109,6 +116,23 @@ describe('testando service carService', () => {
         error = err;
       }
       expect(error).to.be.instanceOf(ZodError);
+    });
+  });
+  describe('testando o método delete', () => {
+    it('deve ser deletado um carro', async () => {
+      const result = await carService.delete(carIdMocks._id);
+      expect(result).to.be.eql(carIdMocks);
+    });
+    it('deve ser lançado um erro', async () => {
+      let error: any;
+      try {
+        await carService.delete('2');
+      }
+      catch (err) {
+        error = err;
+      }
+      expect(error).to.be.instanceOf(Error);
+      expect(error.message).to.be.eql(ErrorTypes.EntityNotFound);
     });
   });
 });
