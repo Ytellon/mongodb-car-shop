@@ -4,6 +4,7 @@ const { expect } = chai;
 import { Model, Mongoose } from 'mongoose';
 import Car from '../../../models/carModel';
 import { carMocks, carIdMocks } from '../../mocks/carMocks';
+import { ErrorTypes } from '../../../errors/catalog';
 
 describe('testando Model carModel', () => {
 
@@ -20,6 +21,10 @@ describe('testando Model carModel', () => {
 
     sinon
       .stub(Model, 'findById')
+      .resolves(carIdMocks);
+    
+    sinon
+      .stub(Model, 'findByIdAndUpdate')
       .resolves(carIdMocks);
   });
 
@@ -55,7 +60,24 @@ describe('testando Model carModel', () => {
         error = err;
       }
       expect(error).to.be.instanceOf(Error);
-      expect(error.message).to.be.eql('InvalidMongoId');
+      expect(error.message).to.be.eql(ErrorTypes.InvalidMongoId);
+    });
+  });
+  describe('testando o método update', () => {
+    it('deve ser retornado um carro', async () => {
+      const result = await carModel.update(carIdMocks._id, carMocks);
+      expect(result).to.be.eql(carIdMocks);
+    });
+    it('deve ser lançado um erro', async () => {
+      let error: any;
+      try {
+        await carModel.update('2', carMocks);
+      }
+      catch (err) {
+        error = err;
+      }
+      expect(error).to.be.instanceOf(Error);
+      expect(error.message).to.be.eql(ErrorTypes.InvalidMongoId);
     });
   });
 });
