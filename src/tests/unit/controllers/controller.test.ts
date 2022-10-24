@@ -41,4 +41,37 @@ describe('testando service carController', () => {
       expect(jsonStub.calledWith(carIdMocks)).to.be.true;
     });
   });
+
+  describe('testando o método read', () => {
+    beforeEach( async () => {
+      sinon
+        .stub(carService, 'read')
+        .resolves([carIdMocks]);
+    });
+    it('deve ser retornado um array de carros', async () => {
+      await carController.read(req, res);
+      const statusStub = res.status as sinon.SinonStub;
+      const jsonStub = res.json as sinon.SinonStub;
+      
+      expect(statusStub.calledWith(200)).to.be.true;
+      expect(jsonStub.calledWith([carIdMocks])).to.be.true;
+    });
+  });
+
+  describe('testando o método readOne', () => {
+    beforeEach( async () => {
+      sinon
+        .stub(carService, 'readOne')
+        .resolves(carIdMocks);
+    });
+    it('deve ser retornado um carro', async () => {
+      req.params = { id: carIdMocks._id };
+      await carController.readOne(req, res);
+      const statusStub = res.status as sinon.SinonStub;
+      const jsonStub = res.json as sinon.SinonStub;
+      
+      expect(statusStub.calledWith(200)).to.be.true;
+      expect(jsonStub.calledWith(carIdMocks)).to.be.true;
+    });
+  });
 });
