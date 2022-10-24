@@ -17,6 +17,10 @@ describe('testando Model carModel', () => {
     sinon
       .stub(Model, 'find')
       .resolves([carIdMocks]);
+
+    sinon
+      .stub(Model, 'findById')
+      .resolves(carIdMocks);
   });
 
   after(()=>{
@@ -34,6 +38,24 @@ describe('testando Model carModel', () => {
     it('deve ser retornado um array de carros', async () => {
       const result = await carModel.read();
       expect(result).to.be.eql([carIdMocks]);
+    });
+  });
+
+  describe('testando o método readOne', () => {
+    it('deve ser retornado um carro', async () => {
+      const result = await carModel.readOne(carIdMocks._id);
+      expect(result).to.be.eql(carIdMocks);
+    });
+    it('deve ser lançado um erro', async () => {
+      let error: any;
+      try {
+        await carModel.readOne('2');
+      }
+      catch (err) {
+        error = err;
+      }
+      expect(error).to.be.instanceOf(Error);
+      expect(error.message).to.be.eql('InvalidMongoId');
     });
   });
 });
