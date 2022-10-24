@@ -28,6 +28,15 @@ describe('testando service carService', () => {
       .resolves(carIdMocks)
       .onCall(1)
       .resolves(null);
+
+    sinon
+      .stub(carModel, 'update')
+      .onCall(0)
+      .resolves(carIdMocks)
+      .onCall(1)
+      .resolves(null)
+      .onCall(2)
+      .resolves(carIdMocks);
   });
 
   after(()=>{
@@ -73,6 +82,33 @@ describe('testando service carService', () => {
       }
       expect(error).to.be.instanceOf(Error);
       expect(error.message).to.be.eql(ErrorTypes.EntityNotFound);
+    });
+  });
+  describe('testando o método update', () => {
+    it('deve ser atualizado um carro', async () => {
+      const result = await carService.update(carIdMocks._id, carMocks);
+      expect(result).to.be.eql(carIdMocks);
+    });
+    it('deve ser lançado um erro', async () => {
+      let error: any;
+      try {
+        await carService.update('2', carMocks);
+      }
+      catch (err) {
+        error = err;
+      }
+      expect(error).to.be.instanceOf(Error);
+      expect(error.message).to.be.eql(ErrorTypes.EntityNotFound);
+    });
+    it('deve ser lançado um Zoderr', async () => {
+      let error;
+      try {
+        await carService.update(carIdMocks._id, {});
+      }
+      catch (err) {
+        error = err;
+      }
+      expect(error).to.be.instanceOf(ZodError);
     });
   });
 });
