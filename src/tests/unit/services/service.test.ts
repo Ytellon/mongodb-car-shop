@@ -5,7 +5,8 @@ import { Model, Mongoose } from 'mongoose';
 import CarModel from '../../../models/carModel';
 import { carMocks, carIdMocks } from '../../mocks/carMocks';
 import CarService from '../../../services/carService';
-import { ZodError } from 'zod';  
+import { ZodError } from 'zod';
+import { ErrorTypes } from '../../../errors/catalog';
 
 describe('testando service carService', () => {
 
@@ -16,6 +17,17 @@ describe('testando service carService', () => {
     sinon
       .stub(carModel, 'create')
       .resolves(carIdMocks);
+
+    sinon
+      .stub(carModel, 'read')
+      .resolves([carIdMocks]);
+    
+    sinon
+      .stub(carModel, 'readOne')
+      .onCall(0)
+      .resolves(carIdMocks)
+      .onCall(1)
+      .resolves(null);
   });
 
   after(()=>{
@@ -36,6 +48,31 @@ describe('testando service carService', () => {
         error = err;
       }
       expect(error).to.be.instanceOf(ZodError);
+    });
+  });
+
+  describe('testando o método read', () => {
+    it('deve ser retornado um array de carros', async () => {
+      const result = await carService.read();
+      expect(result).to.be.eql([carIdMocks]);
+    });
+  });
+
+  describe('testando o método readOne', () => {
+    it('deve ser retornado um carro', async () => {
+      const result = await carService.readOne(carIdMocks._id);
+      expect(result).to.be.eql(carIdMocks);
+    });
+    it('deve ser lançado um erro', async () => {
+      let error: any;
+      try {
+        await carService.readOne('2');
+      }
+      catch (err) {
+        error = err;
+      }
+      expect(error).to.be.instanceOf(Error);
+      expect(error.message).to.be.eql(ErrorTypes.EntityNotFound);
     });
   });
 });
